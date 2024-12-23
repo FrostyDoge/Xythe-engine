@@ -36,8 +36,7 @@ class EffectsSettingsSubState extends BaseOptionsMenu
 		var option:Option = new Option('Winning Icons', //Name
 			"If unchecked, disables winning icons", //Description
 			'winningIcons',
-			BOOL,
-			true);
+			BOOL);
 		addOption(option);
 
 		super();
