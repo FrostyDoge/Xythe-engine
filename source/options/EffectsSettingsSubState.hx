@@ -27,7 +27,7 @@ class EffectsSettingsSubState extends BaseOptionsMenu
 
 		var option:Option = new Option('animation',
 			'If unchecked, disables all animation. Only use this if you have a piece of shit PC., or want your performace increased',
-			'antialiasing',
+			'animation',
 			BOOL);
 		option.onChange = onChangeAntiAliasing; //Changing onChange is only needed if you want to make a special interaction after it changes the value
 		addOption(option);
@@ -38,27 +38,6 @@ class EffectsSettingsSubState extends BaseOptionsMenu
 			'winning-icons',
 			BOOL);
 		addOption(option);
-
-		var option:Option = new Option('GPU Caching', //Name
-			"If checked, allows the GPU to be used for caching textures, decreasing RAM usage.\nDon't turn this on if you have a shitty Graphics Card.", //Description
-			'cacheOnGPU',
-			BOOL);
-		addOption(option);
-
-		#if !html5 //Apparently other framerates isn't correctly supported on Browser? Probably it has some V-Sync shit enabled by default, idk
-		var option:Option = new Option('Framerate',
-			"Pretty self explanatory, isn't it?",
-			'framerate',
-			INT);
-		addOption(option);
-
-		final refreshRate:Int = FlxG.stage.application.window.displayMode.refreshRate;
-		option.minValue = 60;
-		option.maxValue = 240;
-		option.defaultValue = Std.int(FlxMath.bound(refreshRate, option.minValue, option.maxValue));
-		option.displayFormat = '%v FPS';
-		option.onChange = onChangeFramerate;
-		#end
 
 		super();
 		insert(1, boyfriend);
