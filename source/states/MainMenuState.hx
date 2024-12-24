@@ -47,7 +47,7 @@ class MainMenuState extends MusicBeatState
 
 		#if DISCORD_ALLOWED
 		// Updating Discord Rich Presence
-		DiscordClient.changePresence("WHY THE FUCK ARE YOU IN: In the Menus", null);
+		DiscordClient.changePresence("In the Menus", null);
 		if (FlxG.random.bool(50))
 		{
 			openfl.Lib.application.window.title = "KYS";
@@ -64,10 +64,23 @@ class MainMenuState extends MusicBeatState
 		{
 			openfl.Lib.application.window.title = "Holy Hell, A rare Find!!!!";
 		}
+		if (FlxG.random.bool(40))
+			{
+				openfl.Lib.application.window.title = "FnF VS Fire In The Hole";
+			}
+		if (FlxG.random.bool(50))
+		{
+			openfl.Lib.application.window.title = "FnF VS Bitch day";
+		}
+		if (FlxG.random.bool(30))
+			{
+				openfl.Lib.application.window.title = "Friday Night Funkin' VS Pokémon Mystery Dungeon: Loss of Light real?";
+			}
 		if (FlxG.random.bool(80))
 		{
-			openfl.Lib.application.window.title = "Xythe Engine";
+			openfl.Lib.application.window.title = "Friday Night Funkin': Xythe Engine";
 		}
+				
 		#end
 
 		persistentUpdate = persistentDraw = true;
