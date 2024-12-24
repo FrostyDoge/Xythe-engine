@@ -19,7 +19,10 @@ import states.TitleState;
 	public var splashSkin:String = 'Psych';
 	public var splashAlpha:Float = 0.6;
 	public var lowQuality:Bool = false;
+	public var Transparent:Bool = true;
+	public var animation:Bool = true;
 	public var shaders:Bool = true;
+	public var winningicons:Bool = true; //winning icons
 	public var cacheOnGPU:Bool = #if !switch false #else true #end; //From Stilic
 	public var framerate:Int = 60;
 	public var camZooms:Bool = true;

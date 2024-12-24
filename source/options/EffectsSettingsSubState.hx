@@ -10,15 +10,21 @@ class EffectsSettingsSubState extends BaseOptionsMenu
 	{
 		title = Language.getPhrase('effects_menu', 'EfeCtS Settings');
 		rpcTitle = 'Fuck U'; //for Discord Rich Presence
-
+		
+		
 		boyfriend = new Character(840, 170, 'bf', true);
+		boyfriend.visible = false;
 		boyfriend.setGraphicSize(Std.int(boyfriend.width * 0.75));
 		boyfriend.updateHitbox();
+		
+		if(!ClientPrefs.data.animation)
+		{
 		boyfriend.dance();
 		boyfriend.animation.finishCallback = function (name:String) boyfriend.dance();
 		boyfriend.visible = false;
-
-		//I'd suggest using "Low Quality" as an example for making your own option since it is the simplest here
+		}
+		 else boyfriend.visible = true;
+	
 		var option:Option = new Option('Transparentacy', //Name
 			'If checked, Makes the Hud and UI slightly see through', //Description
 			'Transparent', //Save data variable name
@@ -26,7 +32,7 @@ class EffectsSettingsSubState extends BaseOptionsMenu
 		addOption(option);
 
 		var option:Option = new Option('animation',
-			'If unchecked, disables all animation. Only use this if you have a piece of shit PC., or want your performace increased',
+			'If unchecked, some animation. Only use this if you have a piece of shit PC., or if you spend your life on a fucking potato',
 			'animation',
 			BOOL);
 		option.onChange = onChangeAntiAliasing; //Changing onChange is only needed if you want to make a special interaction after it changes the value
@@ -35,7 +41,7 @@ class EffectsSettingsSubState extends BaseOptionsMenu
 
 		var option:Option = new Option('Winning Icons', //Name
 			"If unchecked, disables winning icons", //Description
-			'winningIcons',
+			'winningicons',
 			BOOL);
 		addOption(option);
 

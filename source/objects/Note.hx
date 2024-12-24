@@ -94,6 +94,7 @@ class Note extends FlxSprite
 	public static var swagWidth:Float = 160 * 0.7;
 	public static var colArray:Array<String> = ['purple', 'blue', 'green', 'red'];
 	public static var defaultNoteSkin(default, never):String = 'noteSkins/NOTE_assets';
+	#if Transparent public static var defaultNoteSkin(default, never):String = 'noteSkins/NOTE_assetsTran'; #end //Transparent notes
 
 	public var noteSplashData:NoteSplashData = {
 		disabled: false,
@@ -373,6 +374,8 @@ class Note extends FlxSprite
 		var customSkin:String = skin + skinPostfix;
 		var path:String = PlayState.isPixelStage ? 'pixelUI/' : '';
 		if(customSkin == _lastValidChecked || Paths.fileExists('images/' + path + customSkin + '.png', IMAGE))
+		#if Transparent = true(customSkin == _lastValidChecked || Paths.fileExists('images/' + path + customSkin + Transparent + '.png', IMAGE))
+		#end //Transparent custom notes
 		{
 			skin = customSkin;
 			_lastValidChecked = customSkin;

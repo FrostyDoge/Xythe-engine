@@ -67,7 +67,7 @@ class TitleState extends MusicBeatState
 
 	var mustUpdate:Bool = false;
 
-	public static var updateVersion:String = '';
+	public static var updateVersion:String = '0.1';
 
 	override public function create():Void
 	{
@@ -91,7 +91,7 @@ class TitleState extends MusicBeatState
 			http.onData = function (data:String)
 			{
 				updateVersion = data.split('\n')[0].trim();
-				var curVersion:String = MainMenuState.psychEngineVersion.trim();
+				var curVersion:String = MainMenuState.xytheEngineVersion.trim();
 				trace('version online: ' + updateVersion + ', your version: ' + curVersion);
 				if(updateVersion != curVersion) {
 					trace('versions arent matching!');

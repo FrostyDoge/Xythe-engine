@@ -74,16 +74,16 @@ class PlayState extends MusicBeatState
 	public static var STRUM_X_MIDDLESCROLL = -278;
 
 	public static var ratingStuff:Array<Dynamic> = [
-		['You Suck!', 0.2], //From 0% to 19%
-		['Shit', 0.4], //From 20% to 39%
-		['Bad', 0.5], //From 40% to 49%
-		['Bruh', 0.6], //From 50% to 59%
-		['Meh', 0.69], //From 60% to 68%
-		['Nice', 0.7], //69%
-		['Good', 0.8], //From 70% to 79%
-		['Great', 0.9], //From 80% to 89%
-		['Sick!', 1], //From 90% to 99%
-		['Perfect!!', 1] //The value on this one isn't used actually, since Perfect is always "1"
+		['UHhhhhhhh', 0.2], //From 0% to 19%
+		['NOOOOOOOOOOOOOOOOOOOOO!!!!!!!!', 0.4], //From 20% to 39%
+		['Fukin Cringe', 0.5], //From 40% to 49%
+		['Stop it, Get some help!', 0.6], //From 50% to 59%
+		['Dog Water', 0.69], //From 60% to 68%
+		['Damn, he need some milk!', 0.7], //69%
+		['Good Soup', 0.8], //From 70% to 79%
+		['Time To Go Gambling!', 0.9], //From 80% to 89%
+		['Do A Flip!', 1], //From 90% to 99%
+		['Holy Cow!', 1] //The value on this one isn't used actually, since Perfect is always "1"
 	];
 
 	//event variables
@@ -487,7 +487,7 @@ class PlayState extends MusicBeatState
 		timeBar.scrollFactor.set();
 		timeBar.screenCenter(X);
 		timeBar.alpha = 0;
-		timeBar.visible = showTime;
+		timeBar.visible = false;
 		uiGroup.add(timeBar);
 		uiGroup.add(timeTxt);
 
@@ -495,8 +495,8 @@ class PlayState extends MusicBeatState
 
 		if(ClientPrefs.data.timeBarType == 'Song Name')
 		{
-			timeTxt.size = 24;
-			timeTxt.y += 3;
+			timeTxt.size = 12;
+			timeTxt.y += 1.5;
 		}
 
 		generateSong();
@@ -2130,6 +2130,10 @@ class PlayState extends MusicBeatState
 				{
 					char.idleSuffix = value2;
 					char.recalculateDanceIdle();
+				}
+
+			case 'healthDrain':
+							ClientPrefs.getGameplaySetting('healthloss') - (flValue2);{
 				}
 
 			case 'Screen Shake':
