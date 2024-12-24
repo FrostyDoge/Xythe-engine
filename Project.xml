@@ -40,7 +40,6 @@
 	<!-- ____________________________ Window Settings ___________________________ -->
 
 	<!--These window settings apply to all targets-->
-	<haxelib name="hxCodec" if="desktop || android" />
 	<window width="1280" height="720" fps="120" background="#000000" hardware="true" vsync="false" />
 
 	<!--HTML5-specific-->
@@ -117,7 +116,7 @@
 	<haxelib name="flixel" version="5.6.1"/>
 	<haxelib name="flixel-addons" version="3.2.2"/>
 	<haxelib name="tjson" version="1.4.0"/>
-
+	<haxelib name="hxCodec" if="desktop || android" version="3.0.2" />
 	<!--Psych stuff needed-->
 	<haxelib name="linc_luajit" if="LUA_ALLOWED"/>
 	<haxelib name="hscript-iris" if="HSCRIPT_ALLOWED" version="1.1.0"/>
