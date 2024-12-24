@@ -39,12 +39,6 @@ class EffectsSettingsSubState extends BaseOptionsMenu
 		addOption(option);
 		antialiasingOption = optionsArray.length-1;
 
-		var option:Option = new Option('Winning Icons', //Name
-			"If unchecked, disables winning icons", //Description
-			'winningicons',
-			BOOL);
-		addOption(option);
-
 		super();
 		insert(1, boyfriend);
 	}
