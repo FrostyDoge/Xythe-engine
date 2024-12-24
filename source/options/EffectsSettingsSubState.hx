@@ -53,7 +53,11 @@ class EffectsSettingsSubState extends BaseOptionsMenu
 			}
 		}
 	}
-
+	function onChangeAnimation()
+		{
+			ClientPrefs.data.animation;
+			
+		}
 	function onChangeFramerate()
 	{
 		if(ClientPrefs.data.framerate > FlxG.drawFramerate)
