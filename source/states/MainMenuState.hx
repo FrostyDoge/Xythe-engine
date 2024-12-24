@@ -5,6 +5,7 @@ import flixel.effects.FlxFlicker;
 import lime.app.Application;
 import states.editors.MasterEditorMenu;
 import options.OptionsState;
+import flixel.util.FlxTimer;
 
 enum MainMenuColumn {
 	LEFT;
@@ -47,6 +48,26 @@ class MainMenuState extends MusicBeatState
 		#if DISCORD_ALLOWED
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("WHY THE FUCK ARE YOU IN: In the Menus", null);
+		if (FlxG.random.bool(50))
+		{
+			openfl.Lib.application.window.title = "KYS";
+		}
+		if (FlxG.random.bool(25))
+		{
+			openfl.Lib.application.window.title = "Shader? Is that you?";
+		}
+		if (FlxG.random.bool(60))
+		{
+			openfl.Lib.application.window.title = "If You See This... Fuck You!";
+		}
+		if (FlxG.random.bool(10))
+		{
+			openfl.Lib.application.window.title = "Holy Hell, A rare Find!!!!";
+		}
+		if (FlxG.random.bool(80))
+		{
+			openfl.Lib.application.window.title = "Xythe Engine";
+		}
 		#end
 
 		persistentUpdate = persistentDraw = true;
