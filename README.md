@@ -1,5 +1,5 @@
 # About
-Xythe engine is... basically Psych engine with extra steps **but** maybe overhauled in another engine (maybe 3D :3) in the near future. (who know :3c)
+Xythe engine is... basically Psych engine with extra steps **but** maybe overhauled in another engine (maybe 3D :3) in the near future. (who knows :3c)
 
 Xythe engine aims to fix what Psych engine 1.0+ should have. Namely **WINNING ICONS** because I'm sick to death of finding no fnf engines using it. *V-Slice* uses winning icons! Right now we're in **very** early development so uh... Have fun!
 
