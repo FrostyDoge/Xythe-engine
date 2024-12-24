@@ -39,8 +39,8 @@ class CreditsState extends MusicBeatState
 
 		var defaultList:Array<Array<String>> = [ //Name - Icon name - Description - Link - BG Color
 			["Xythe Engine Team"],
-			["TheWolfLovers",		"ace",		"Owner and Programmer",					"https://gamejolt.com/invite/TheWolfLovers",	"fff200"],
-			["FrostyDoge!",			"frosty",	"Programmer",							"https://www.youtube.com/@FrostyDoge-w2t",			"d0a557"],
+			["TheWolfLovers",		"ace",		"Owner, Programmer, concept artist and artist",					"https://gamejolt.com/invite/TheWolfLovers",	"fff200"],
+			["FrostyDoge!",			"frosty",	"Programmer (great help!)",							"https://www.youtube.com/@FrostyDoge-w2t",			"d0a557"],
 			[""],
 			["Psych Engine Team"],
 			["Shadow Mario",		"shadowmario",		"Main Programmer and Head of Psych Engine",					"https://ko-fi.com/shadowmario",	"444444"],
@@ -72,7 +72,7 @@ class CreditsState extends MusicBeatState
 			["Psych Engine Discord"],
 			["Join the Psych Ward!", "discord", "", "https://discord.gg/2ka77eMXDv", "5165F6"]
 		];
-		
+	
 		for(i in defaultList)
 			creditsStuff.push(i);
 	
