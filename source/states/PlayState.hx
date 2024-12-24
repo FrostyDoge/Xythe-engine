@@ -1876,46 +1876,45 @@ class PlayState extends MusicBeatState
 		// update health bar
 		health = value;
 		var newPercent:Null<Float> = FlxMath.remapToRange(FlxMath.bound(healthBar.valueFunction(), healthBar.bounds.min, healthBar.bounds.max), healthBar.bounds.min, healthBar.bounds.max, 0, 100);
-		healthBar.percent = (newPercent != null ? newPercent : 0);
+		//healthBar.percent = (newPercent != null ? newPercent : 0);
+		return healthBar.percent = (newPercent != null ? newPercent : 0);
 
 
-		if (winningIcons == false) {
-			iconP1.animation.curAnim.curFrame = (healthBar.percent < 20) ? 1 : 0; //If health is under 20%, change player icon to frame 1 (losing icon), otherwise, frame 0 (normal)
-			iconP2.animation.curAnim.curFrame = (healthBar.percent > 80) ? 1 : 0; //If health is over 80%, change opponent icon to frame 1 (losing icon), otherwise, frame 0 (normal)
-			return health;
-		} else if (winningIcons == true) {
-			if (health > 2)
-				health = 2;
+
+			//iconP1.animation.curAnim.curFrame = (healthBar.percent < 20) ? 1 : 0; //If health is under 20%, change player icon to frame 1 (losing icon), otherwise, frame 0 (normal)
+			//iconP2.animation.curAnim.curFrame = (healthBar.percent > 80) ? 1 : 0; //If health is over 80%, change opponent icon to frame 1 (losing icon), otherwise, frame 0 (normal)
+		if (health > 2)
+			health = 2;
 	
-			if (iconP1.animation.frames == 3) {
-				if (healthBar.percent < 20)
-					iconP1.animation.curAnim.curFrame = 1;
-				else if (healthBar.percent > 80)
-					iconP1.animation.curAnim.curFrame = 2;
-				else
-					iconP1.animation.curAnim.curFrame = 0;
-			} 
-			else {
-				if (healthBar.percent < 20)
-					iconP1.animation.curAnim.curFrame = 1;
-				else
-					iconP1.animation.curAnim.curFrame = 0;
-			}
-			if (iconP2.animation.frames == 3) {
-				if (healthBar.percent > 80)
-					iconP2.animation.curAnim.curFrame = 1;
-				else if (healthBar.percent < 20)
-					iconP2.animation.curAnim.curFrame = 2;
-				else 
-					iconP2.animation.curAnim.curFrame = 0;
-			} else {
-				if (healthBar.percent > 80)
-					iconP2.animation.curAnim.curFrame = 1;
-				else 
-					iconP2.animation.curAnim.curFrame = 0;
-			}
-			return health;	
+		if (iconP1.animation.frames == 3) {
+			if (healthBar.percent < 20)
+				iconP1.animation.curAnim.curFrame = 1;
+			else if (healthBar.percent > 80)
+				iconP1.animation.curAnim.curFrame = 2;
+			else
+				iconP1.animation.curAnim.curFrame = 0;
+		} 
+		else {
+			if (healthBar.percent < 20)
+				iconP1.animation.curAnim.curFrame = 1;
+			else
+				iconP1.animation.curAnim.curFrame = 0;
 		}
+
+		if (iconP2.animation.frames == 3) {
+			if (healthBar.percent > 80)
+				iconP2.animation.curAnim.curFrame = 1;
+			else if (healthBar.percent < 20)
+				iconP2.animation.curAnim.curFrame = 2;
+			else 
+				iconP2.animation.curAnim.curFrame = 0;
+		} else {
+			if (healthBar.percent > 80)
+				iconP2.animation.curAnim.curFrame = 1;
+			else 
+				iconP2.animation.curAnim.curFrame = 0;
+		}
+		return health;
 	}
 
 	function openPauseMenu()
@@ -1985,9 +1984,10 @@ class PlayState extends MusicBeatState
 
 		#if DISCORD_ALLOWED DiscordClient.resetClientID(); #end
 		MusicBeatState.switchState(new CharacterEditorState(SONG.player2));
-	}
+	};
 
 	public var isDead:Bool = false; //Don't mess with this on Lua!!!
+
 	public var gameOverTimer:FlxTimer;
 	function doDeathCheck(?skipHealthCheck:Bool = false) {
 		if (((skipHealthCheck && instakillOnMiss) || health <= 0) && !practiceMode && !isDead && gameOverTimer == null)
@@ -2019,14 +2019,14 @@ class PlayState extends MusicBeatState
 						openSubState(new GameOverSubstate(boyfriend));
 						gameOverTimer = null;
 					});
-				}
-				else
+				} 
+				else 
 				{
 					vocals.stop();
 					opponentVocals.stop();
 					FlxG.sound.music.stop();
 					openSubState(new GameOverSubstate(boyfriend));
-				}
+				};
 
 				// MusicBeatState.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 
