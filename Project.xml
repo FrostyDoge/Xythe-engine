@@ -68,6 +68,7 @@
 	<define name="CRASH_HANDLER" if="desktop release" />
 
 	<!-- Assets -->
+	
 	<assets path="assets/fonts" />
 	<assets path="assets/shared"        exclude="*.ogg" if="web"/>
 	<assets path="assets/shared"        exclude="*.mp3" unless="web"/>
@@ -118,7 +119,7 @@
 	<haxelib name="tjson" version="1.4.0"/>
 	<haxelib name='openfl'/>
 	<haxelib name="hxCodec" if="desktop || android" version="3.0.2" />
-	<haxelib name="lime" />
+	
 	<!--Psych stuff needed-->
 	<haxelib name="linc_luajit" if="LUA_ALLOWED"/>
 	<haxelib name="hscript-iris" if="HSCRIPT_ALLOWED" version="1.1.0"/>
