@@ -13,7 +13,8 @@ import flixel.util.FlxStringUtil;
 class DiscordClient
 {
 	public static var isInitialized:Bool = false;
-	private inline static final _defaultID:String = "1272667686081527838";
+	//private inline static final _defaultID:String = "1272667686081527838"; //P-Slice engine
+	private inline static final _defaultID:String = "1321226168007135374";
 	public static var clientID(default, set):String = _defaultID;
 	private static var presence:DiscordPresence = new DiscordPresence();
 	// hides this field from scripts and reflection in general
