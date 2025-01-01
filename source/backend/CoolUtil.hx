@@ -26,6 +26,16 @@ class CoolUtil
 		return daList != null ? listFromString(daList) : [];
 	}
 
+	/**
+	 * Return string with first character uppercase'd, rest lowercase'd
+	 * @param	str
+	 * @return
+	 */
+	 inline public static function FUL(str:String):String
+		{
+			return str.substr(0, 1).toUpperCase() + str.substr(1, str.length - 1).toLowerCase();
+		}
+
 	inline public static function colorFromString(color:String):FlxColor
 	{
 		var hideChars = ~/[\t\n\r]/;
@@ -61,6 +71,26 @@ class CoolUtil
 		return newValue / tempMult;
 	}
 
+	public static function sortAlphabetically(list:Array<String>):Array<String> {
+		// This moster here fixes order of scrips to match the windows implementation
+		// Why? because some people use this quirk (like me)
+
+		list.sort((a,b) -> { 
+				a = a.toUpperCase();
+				b = b.toUpperCase();
+			  
+				if (a < b) {
+				  return -1;
+				}
+				else if (a > b) {
+				  return 1;
+				} else {
+				  return 0;
+				}
+			  });
+		return list;
+	}
+	
 	inline public static function dominantColor(sprite:flixel.FlxSprite):Int
 	{
 		var countByColor:Map<Int, Int> = [];
@@ -141,7 +171,7 @@ class CoolUtil
 	inline public static function getSavePath():String {
 		final company:String = FlxG.stage.application.meta.get('company');
 		// #if (flixel < "5.0.0") return company; #else
-		return '${company}/${flixel.util.FlxSave.validate(FlxG.stage.application.meta.get('file'))}';
+		return '${company}/${flixel.util.FlxSave.validate("PsychEngine")}'; //! hardcoding for backwards compatibility
 		// #end
 	}
 
@@ -158,5 +188,14 @@ class CoolUtil
 			default:
 				text.borderStyle = NONE;
 		}
+	}
+
+	public static function showPopUp(message:String, title:String):Void
+	{
+		#if android
+		AndroidTools.showAlertDialog(title, message, {name: "OK", func: null}, null);
+		#else
+		FlxG.stage.window.alert(message, title);
+		#end
 	}
 }

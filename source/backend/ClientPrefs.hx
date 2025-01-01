@@ -8,6 +8,24 @@ import states.TitleState;
 
 // Add a variable here and it will get automatically saved
 @:structInit class SaveVariables {
+	// Mobile and Mobile Controls Releated
+	public var extraHints:String = "NONE"; // hitbox extra hint option
+	public var hitbox2:Bool = true; // hitbox extra button position option
+	public var dynamicColors:Bool = true; // yes cause its cool -Karim
+	public var controlsAlpha:Float = FlxG.onMobile ? 0.6 : 0;
+	public var screensaver:Bool = false;
+	public var wideScreen:Bool = false;
+	#if android
+	public var storageType:String = "EXTERNAL_DATA";
+	#end
+	public var hitboxType:String = "Gradient";
+	public var popUpRating:Bool = true;
+	public var vsync:Bool = false;
+	public var vibrating:Bool = false;
+
+	public var favSongIds:Array<String> = [];
+	public var lastFreeplayMod:String = '||bf';
+
 	public var downScroll:Bool = false;
 	public var middleScroll:Bool = false;
 	public var opponentStrums:Bool = true;
@@ -17,16 +35,20 @@ import states.TitleState;
 	public var antialiasing:Bool = true;
 	public var noteSkin:String = 'Default';
 	public var splashSkin:String = 'Psych';
+	public var holdSkin:String = 'Vanilla';
 	public var splashAlpha:Float = 0.6;
+	public var holdSplashAlpha:Float = 0.6;
 	public var lowQuality:Bool = false;
-	public var Transparent:Bool = true;
-	public var animation:Bool = true;
 	public var shaders:Bool = true;
-	public var winningicons:Bool = true; //winning icons
 	public var cacheOnGPU:Bool = #if !switch false #else true #end; //From Stilic
 	public var framerate:Int = 60;
 	public var camZooms:Bool = true;
 	public var hideHud:Bool = false;
+	public var vsliceFreeplayColors:Bool = true;
+	public var vsliceResults:Bool = true;
+	public var vsliceSpecialCards:Bool = true;
+	public var vsliceSmoothBar:Bool = true;
+	public var vsliceForceNewTag:Bool = false;
 	public var noteOffset:Int = 0;
 	public var arrowRGB:Array<Array<FlxColor>> = [
 		[0xFFC24B99, 0xFFFFFFFF, 0xFF3C1F56],
@@ -89,19 +111,25 @@ class ClientPrefs {
 	//Every key has two binds, add your key bind down here and then add your control on options/ControlsSubState.hx and Controls.hx
 	public static var keyBinds:Map<String, Array<FlxKey>> = [
 		//Key Bind, Name for ControlsSubState
-		'note_up'		=> [D, UP],
-		'note_left'		=> [F, LEFT],
-		'note_down'		=> [J, DOWN],
-		'note_right'	=> [K, RIGHT],
+		'note_up'		=> [W, UP],
+		'note_left'		=> [A, LEFT],
+		'note_down'		=> [S, DOWN],
+		'note_right'	=> [D, RIGHT],
 		
 		'ui_up'			=> [W, UP],
 		'ui_left'		=> [A, LEFT],
 		'ui_down'		=> [S, DOWN],
 		'ui_right'		=> [D, RIGHT],
 		
+		'favorite'		=> [F],
+		'bar_left'		=> [Q],
+		'bar_right'		=> [E],
+		'char_select'	=> [TAB],
+
 		'accept'		=> [SPACE, ENTER],
 		'back'			=> [BACKSPACE, ESCAPE],
 		'pause'			=> [ENTER, ESCAPE],
+		'screenshot'    => [F3],
 		'reset'			=> [R],
 		
 		'volume_mute'	=> [ZERO],
@@ -122,11 +150,39 @@ class ClientPrefs {
 		'ui_down'		=> [DPAD_DOWN, LEFT_STICK_DIGITAL_DOWN],
 		'ui_right'		=> [DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT],
 		
+		'favorite'		=> [],
+		'bar_left'		=> [],
+		'bar_right'		=> [],
+		'char_select'		=> [],
+
 		'accept'		=> [A, START],
 		'back'			=> [B],
 		'pause'			=> [START],
+		'screenshot'    => [],
 		'reset'			=> [BACK]
 	];
+	public static var mobileBinds:Map<String, Array<MobileInputID>> = [
+		'note_up'		=> [HITBOX_UP],
+		'note_left'		=> [HITBOX_LEFT],
+		'note_down'		=> [HITBOX_DOWN],
+		'note_right'	=> [HITBOX_RIGHT],
+
+		'ui_up'			=> [UP],
+		'ui_left'		=> [LEFT],
+		'ui_down'		=> [DOWN],
+		'ui_right'		=> [RIGHT],
+
+		'favorite'		=> [F],
+		'bar_left'		=> [NONE],
+		'bar_right'		=> [NONE],
+
+		'accept'		=> [A],
+		'back'			=> [B],
+		'pause'			=> [#if android NONE #else P #end],
+		'screenshot'    => [NONE],
+		'reset'			=> [NONE]
+	];
+	public static var defaultMobileBinds:Map<String, Array<MobileInputID>> = null;
 	public static var defaultKeys:Map<String, Array<FlxKey>> = null;
 	public static var defaultButtons:Map<String, Array<FlxGamepadInputID>> = null;
 
@@ -147,14 +203,17 @@ class ClientPrefs {
 	{
 		var keyBind:Array<FlxKey> = keyBinds.get(key);
 		var gamepadBind:Array<FlxGamepadInputID> = gamepadBinds.get(key);
+		var mobileBind:Array<MobileInputID> = mobileBinds.get(key);
 		while(keyBind != null && keyBind.contains(NONE)) keyBind.remove(NONE);
 		while(gamepadBind != null && gamepadBind.contains(NONE)) gamepadBind.remove(NONE);
+		while(mobileBind != null && mobileBind.contains(NONE)) mobileBind.remove(NONE);
 	}
 
 	public static function loadDefaultKeys()
 	{
 		defaultKeys = keyBinds.copy();
 		defaultButtons = gamepadBinds.copy();
+		defaultMobileBinds = mobileBinds.copy();
 	}
 
 	public static function saveSettings() {
@@ -169,6 +228,7 @@ class ClientPrefs {
 		save.bind('controls_v3', CoolUtil.getSavePath());
 		save.data.keyboard = keyBinds;
 		save.data.gamepad = gamepadBinds;
+		save.data.mobile = mobileBinds;
 		save.flush();
 		FlxG.log.add("Settings saved!");
 	}
@@ -235,6 +295,11 @@ class ClientPrefs {
 				for (control => keys in loadedControls)
 					if(gamepadBinds.exists(control)) gamepadBinds.set(control, keys);
 			}
+			if(save.data.mobile != null) {
+					var loadedControls:Map<String, Array<MobileInputID>> = save.data.mobile;
+					for (control => keys in loadedControls)
+						if(mobileBinds.exists(control)) mobileBinds.set(control, keys);
+			}
 			reloadVolumeKeys();
 		}
 	}
@@ -255,8 +320,8 @@ class ClientPrefs {
 	public static function toggleVolumeKeys(?turnOn:Bool = true)
 	{
 		final emptyArray = [];
-		FlxG.sound.muteKeys = turnOn ? TitleState.muteKeys : emptyArray;
-		FlxG.sound.volumeDownKeys = turnOn ? TitleState.volumeDownKeys : emptyArray;
-		FlxG.sound.volumeUpKeys = turnOn ? TitleState.volumeUpKeys : emptyArray;
+		FlxG.sound.muteKeys = (!Controls.instance.mobileC && turnOn) ? TitleState.muteKeys : emptyArray;
+		FlxG.sound.volumeDownKeys = (!Controls.instance.mobileC && turnOn) ? TitleState.volumeDownKeys : emptyArray;
+		FlxG.sound.volumeUpKeys = (!Controls.instance.mobileC && turnOn) ? TitleState.volumeUpKeys : emptyArray;
 	}
 }

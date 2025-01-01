@@ -34,6 +34,12 @@ class ControlsSubState extends MusicBeatSubstate
 		[true, 'Back', 'back', 'Back'],
 		[true, 'Pause', 'pause', 'Pause'],
 		[false],
+		[false, 'P-SLICE'],
+		[true,"Chr menu","char_select","Character Menu"],
+		[true,"FP left","bar_left","Freeplay left"],
+		[true,"FP right","bar_right","Freeplay right"],
+		[true,"Favorite","favorite","Freeplay favorite"],
+		[false],
 		[false, 'VOLUME'],
 		[false, 'Mute', 'volume_mute', 'Volume Mute'],
 		[false, 'Up', 'volume_up', 'Volume Up'],
@@ -62,6 +68,8 @@ class ControlsSubState extends MusicBeatSubstate
 	
 	public function new()
 	{
+		controls.isInSubstate = true;
+
 		super();
 
 		#if DISCORD_ALLOWED
@@ -282,6 +290,7 @@ class ControlsSubState extends MusicBeatSubstate
 		{
 			if(FlxG.keys.justPressed.ESCAPE || FlxG.gamepads.anyJustPressed(B))
 			{
+				controls.isInSubstate = false;
 				close();
 				return;
 			}

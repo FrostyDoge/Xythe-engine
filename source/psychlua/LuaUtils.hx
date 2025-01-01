@@ -1,5 +1,6 @@
 package psychlua;
 
+import flixel.FlxState;
 import backend.WeekData;
 import objects.Character;
 
@@ -160,9 +161,7 @@ class LuaUtils
 				{
 					var errorTitle = 'Mod name: ' + Mods.currentModDirectory;
 					var errorMsg = 'An error occurred: $e';
-					#if windows
-					lime.app.Application.current.window.alert(errorMsg, errorTitle);
-					#end
+					CoolUtil.showPopUp(errorMsg, errorTitle);
 					trace('$errorTitle - $errorMsg');
 				}
 			}
@@ -197,8 +196,8 @@ class LuaUtils
 				return false;
 		}*/
 
-		//trace(variable);
-		if(variable.exists != null && variable.keyValueIterator != null) return true;
+		//trace(variable);//! FlxState implements iterator for Playstate, but we can't use them like MAPs
+		if(variable.exists != null && variable.keyValueIterator != null && !Std.isOfType(variable,FlxState)) return true;
 		return false;
 	}
 
@@ -404,10 +403,26 @@ class LuaUtils
 		return 'linux';
 		#elseif mac
 		return 'mac';
-		#elseif html5
+		#elseif hl
+		return 'hashlink';
+		#elseif (html5 || emscripten || nodejs || winjs || electron)
 		return 'browser';
 		#elseif android
 		return 'android';
+		#elseif webos
+		return 'webos';
+		#elseif tvos
+		return 'tvos';
+		#elseif watchos
+		return 'watchos';
+		#elseif air
+		return 'air';
+		#elseif flash
+		return 'flash';
+		#elseif (ios || iphonesim)
+		return 'ios';
+		#elseif neko
+		return 'neko';
 		#elseif switch
 		return 'switch';
 		#else
@@ -505,12 +520,9 @@ class LuaUtils
 
 	public static function cameraFromString(cam:String):FlxCamera {
 		switch(cam.toLowerCase()) {
-			case 'camgame' | 'game': return PlayState.instance.camGame;
 			case 'camhud' | 'hud': return PlayState.instance.camHUD;
 			case 'camother' | 'other': return PlayState.instance.camOther;
 		}
-		var camera:FlxCamera = MusicBeatState.getVariables().get(cam);
-		if (camera == null || !Std.isOfType(camera, FlxCamera)) camera = PlayState.instance.camGame;
-		return camera;
+		return PlayState.instance.camGame;
 	}
 }

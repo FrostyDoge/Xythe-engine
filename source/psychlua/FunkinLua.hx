@@ -25,9 +25,9 @@ import objects.Character;
 
 import states.MainMenuState;
 import states.StoryMenuState;
-import states.FreeplayState;
 
 import substates.PauseSubState;
+import substates.StickerSubState;
 import substates.GameOverSubstate;
 
 import psychlua.LuaUtils;
@@ -42,6 +42,9 @@ import flixel.input.keyboard.FlxKey;
 import flixel.input.gamepad.FlxGamepadInputID;
 
 import haxe.Json;
+import mobile.psychlua.Functions;
+
+import mikolka.vslice.freeplay.FreeplayState;
 
 class FunkinLua {
 	public var lua:State = null;
@@ -85,6 +88,7 @@ class FunkinLua {
 		set('luaDebugMode', false);
 		set('luaDeprecatedWarnings', true);
 		set('version', MainMenuState.psychEngineVersion.trim());
+		set('versionPS', MainMenuState.pSliceVersion.trim());
 		set('modFolder', this.modFolder);
 
 		// Song/Week shit
@@ -728,29 +732,30 @@ class FunkinLua {
 		Lua_helper.add_callback(lua, "restartSong", function(?skipTransition:Bool = false) {
 			game.persistentUpdate = false;
 			FlxG.camera.followLerp = 0;
+			FlxG.sound.pause();
 			PauseSubState.restartSong(skipTransition);
 			return true;
 		});
 		Lua_helper.add_callback(lua, "exitSong", function(?skipTransition:Bool = false) {
-			if(skipTransition)
-			{
-				FlxTransitionableState.skipNextTransIn = true;
-				FlxTransitionableState.skipNextTransOut = true;
-			}
-
-			if(PlayState.isStoryMode)
-				MusicBeatState.switchState(new StoryMenuState());
-			else
-				MusicBeatState.switchState(new FreeplayState());
-
 			#if DISCORD_ALLOWED DiscordClient.resetClientID(); #end
 
-			FlxG.sound.playMusic(Paths.music('freakyMenu'));
 			PlayState.changedDifficulty = false;
 			PlayState.chartingMode = false;
 			game.transitioning = true;
 			FlxG.camera.followLerp = 0;
-			Mods.loadTopMod();
+			FlxG.sound.music.volume = 0;
+			var target = game.subState != null ? game.subState : game;
+			if (PlayState.isStoryMode)
+				{
+					PlayState.storyPlaylist = [];
+					if(skipTransition) FlxG.switchState(() -> new StoryMenuState())
+					else target.openSubState(new StickerSubState(null, (sticker) -> new StoryMenuState(sticker)));
+				}
+				else
+				{
+					if(skipTransition) FlxG.switchState(() -> FreeplayState.build(null, null))
+					else target.openSubState(new StickerSubState(null, (sticker) -> FreeplayState.build(null, sticker)));
+				}
 			return true;
 		});
 		Lua_helper.add_callback(lua, "getSongPosition", function() {
@@ -972,6 +977,10 @@ class FunkinLua {
 		Lua_helper.add_callback(lua, "playAnim", function(obj:String, name:String, ?forced:Bool = false, ?reverse:Bool = false, ?startFrame:Int = 0)
 		{
 			var obj:Dynamic = LuaUtils.getObjectDirectly(obj);
+			if(obj == null) {
+				luaTrace('playAnim: Target not found! Are you sure that "$obj" exists?: ' + obj, false, false, FlxColor.RED);
+				return false;
+			}
 			if(obj.playAnim != null)
 			{
 				obj.playAnim(name, forced, reverse, startFrame);
@@ -1133,8 +1142,8 @@ class FunkinLua {
 		});
 
 		Lua_helper.add_callback(lua, "setObjectCamera", function(obj:String, camera:String = 'game') {
-			var real:FlxBasic = game.getLuaObject(obj);
-			if(real != null) {
+			var real = game.getLuaObject(obj);
+			if(real!=null){
 				real.cameras = [LuaUtils.cameraFromString(camera)];
 				return true;
 			}
@@ -1153,7 +1162,7 @@ class FunkinLua {
 			return false;
 		});
 		Lua_helper.add_callback(lua, "setBlendMode", function(obj:String, blend:String = '') {
-			var real:FlxSprite = game.getLuaObject(obj);
+			var real = game.getLuaObject(obj);
 			if(real != null) {
 				real.blend = LuaUtils.blendModeFromString(blend);
 				return true;
@@ -1202,16 +1211,22 @@ class FunkinLua {
 		});
 		Lua_helper.add_callback(lua, "objectsOverlap", function(obj1:String, obj2:String) {
 			var namesArray:Array<String> = [obj1, obj2];
-			var objectsArray:Array<FlxBasic> = [];
+			var objectsArray:Array<FlxSprite> = [];
 			for (i in 0...namesArray.length)
 			{
-				var real:FlxBasic = game.getLuaObject(namesArray[i]);
-				if(real != null)
+				var real = game.getLuaObject(namesArray[i]);
+				if(real!=null) {
 					objectsArray.push(real);
-				else
+				} else {
 					objectsArray.push(Reflect.getProperty(LuaUtils.getTargetInstance(), namesArray[i]));
+				}
 			}
-			return (!objectsArray.contains(null) && FlxG.overlap(objectsArray[0], objectsArray[1]));
+
+			if(!objectsArray.contains(null) && FlxG.overlap(objectsArray[0], objectsArray[1]))
+			{
+				return true;
+			}
+			return false;
 		});
 		Lua_helper.add_callback(lua, "getPixelColor", function(obj:String, x:Int, y:Int) {
 			var split:Array<String> = obj.split('.');
@@ -1550,6 +1565,11 @@ class FunkinLua {
 		CustomSubstate.implement(this);
 		ShaderFunctions.implement(this);
 		DeprecatedFunctions.implement(this);
+		#if TOUCH_CONTROLS_ALLOWED
+		MobileFunctions.implement(this);
+		MobileDeprecatedFunctions.implement(this);
+		#end
+		#if android AndroidFunctions.implement(this); #end
 
 		for (name => func in customFunctions)
 		{
@@ -1568,8 +1588,8 @@ class FunkinLua {
 			var resultStr:String = Lua.tostring(lua, result);
 			if(resultStr != null && result != 0) {
 				trace(resultStr);
-				#if windows
-				lime.app.Application.current.window.alert(resultStr, 'Error on lua script!');
+				#if (desktop || mobile)
+				CoolUtil.showPopUp(resultStr, 'Error on lua script!');
 				#else
 				luaTrace('$scriptName\n$resultStr', true, false, FlxColor.RED);
 				#end
@@ -1634,6 +1654,11 @@ class FunkinLua {
 
 	public function set(variable:String, data:Dynamic) {
 		if(lua == null) {
+			return;
+		}
+
+		if (Reflect.isFunction(data)) {
+			Lua_helper.add_callback(lua, variable, data);
 			return;
 		}
 
