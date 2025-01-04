@@ -1,5 +1,7 @@
 package substates;
 
+import mikolka.stages.PicoCapableStage;
+import mikolka.vslice.freeplay.FreeplayState;
 import backend.WeekData;
 
 import objects.Character;
@@ -8,7 +10,7 @@ import flixel.FlxSubState;
 import flixel.math.FlxPoint;
 
 import states.StoryMenuState;
-import states.FreeplayState;
+import substates.StickerSubState;
 
 class GameOverSubstate extends MusicBeatSubstate
 {
@@ -26,6 +28,7 @@ class GameOverSubstate extends MusicBeatSubstate
 	public static var instance:GameOverSubstate;
 	public function new(?playStateBoyfriend:Character = null)
 	{
+		controls.isInSubstate = true;
 		if(playStateBoyfriend != null && playStateBoyfriend.curCharacter == characterName) //Avoids spawning a second boyfriend cuz animate atlas is laggy
 		{
 			this.boyfriend = playStateBoyfriend;
@@ -59,6 +62,9 @@ class GameOverSubstate extends MusicBeatSubstate
 	{
 		instance = this;
 
+		if (ClientPrefs.data.vibrating)
+			lime.ui.Haptic.vibrate(0, 500);
+
 		Conductor.songPosition = 0;
 
 		if(boyfriend == null)
@@ -86,48 +92,13 @@ class GameOverSubstate extends MusicBeatSubstate
 		PlayState.instance.callOnScripts('onGameOverStart', []);
 		FlxG.sound.music.loadEmbedded(Paths.music(loopSoundName), true);
 
-		if(characterName == 'pico-dead')
-		{
-			overlay = new FlxSprite(boyfriend.x + 205, boyfriend.y - 80);
-			overlay.frames = Paths.getSparrowAtlas('Pico_Death_Retry');
-			overlay.animation.addByPrefix('deathLoop', 'Retry Text Loop', 24, true);
-			overlay.animation.addByPrefix('deathConfirm', 'Retry Text Confirm', 24, false);
-			overlay.antialiasing = ClientPrefs.data.antialiasing;
-			overlayConfirmOffsets.set(250, 200);
-			overlay.visible = false;
-			add(overlay);
+		//? pico code
+		PicoCapableStage.playPicoDeath(this);
 
-			boyfriend.animation.callback = function(name:String, frameNumber:Int, frameIndex:Int)
-			{
-				switch(name)
-				{
-					case 'firstDeath':
-						if(frameNumber >= 36 - 1)
-						{
-							overlay.visible = true;
-							overlay.animation.play('deathLoop');
-							boyfriend.animation.callback = null;
-						}
-					default:
-						boyfriend.animation.callback = null;
-				}
-			}
-
-			if(PlayState.instance.gf != null && PlayState.instance.gf.curCharacter == 'nene')
-			{
-				var neneKnife:FlxSprite = new FlxSprite(boyfriend.x - 450, boyfriend.y - 250);
-				neneKnife.frames = Paths.getSparrowAtlas('NeneKnifeToss');
-				neneKnife.animation.addByPrefix('anim', 'knife toss', 24, false);
-				neneKnife.antialiasing = ClientPrefs.data.antialiasing;
-				neneKnife.animation.finishCallback = function(_)
-				{
-					remove(neneKnife);
-					neneKnife.destroy();
-				}
-				insert(0, neneKnife);
-				neneKnife.animation.play('anim', true);
-			}
-		}
+		#if TOUCH_CONTROLS_ALLOWED
+		addTouchPad('NONE', 'A_B');
+		addTouchPadCamera();
+		#end
 
 		super.create();
 	}
@@ -165,13 +136,17 @@ class GameOverSubstate extends MusicBeatSubstate
 				PlayState.seenCutscene = false;
 				PlayState.chartingMode = false;
 	
-				Mods.loadTopMod();
-				if (PlayState.isStoryMode)
-					MusicBeatState.switchState(new StoryMenuState());
+				//! not yet
+			//Mods.loadTopMod();
+			if (PlayState.isStoryMode)
+				{
+					PlayState.storyPlaylist = [];
+					openSubState(new StickerSubState(null, (sticker) -> new StoryMenuState(sticker)));
+				}
 				else
-					MusicBeatState.switchState(new FreeplayState());
-	
-				FlxG.sound.playMusic(Paths.music('freakyMenu'));
+				{
+					openSubState(new StickerSubState(null, (sticker) -> FreeplayState.build(null, sticker)));
+				}
 				PlayState.instance.callOnScripts('onGameOverConfirm', [false]);
 			}
 			else if (justPlayedLoop)
@@ -231,6 +206,9 @@ class GameOverSubstate extends MusicBeatSubstate
 			FlxG.sound.play(Paths.music(endSoundName));
 			new FlxTimer().start(0.7, function(tmr:FlxTimer)
 			{
+				#if TOUCH_CONTROLS_ALLOWED
+				FlxTween.tween(touchPad, {alpha: 0}, 2.7, {ease: FlxEase.smootherStepOut});
+				#end
 				FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
 				{
 					MusicBeatState.resetState();
@@ -242,6 +220,7 @@ class GameOverSubstate extends MusicBeatSubstate
 
 	override function destroy()
 	{
+		controls.isInSubstate = false;
 		instance = null;
 		super.destroy();
 	}

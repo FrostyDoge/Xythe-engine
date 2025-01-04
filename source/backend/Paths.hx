@@ -34,7 +34,7 @@ class Paths
 			dumpExclusions.push(key);
 	}
 
-	public static var dumpExclusions:Array<String> = ['assets/shared/music/freakyMenu.$SOUND_EXT'];
+	public static var dumpExclusions:Array<String> = ['assets/shared/music/freakyMenu.$SOUND_EXT',"assets/shared/images/cursor-default.png", 'assets/shared/mobile/touchpad/bg.png'];
 	// haya I love you for the base cache dump I took to the max
 	public static function clearUnusedMemory()
 	{
@@ -104,6 +104,8 @@ class Paths
 			if(FileSystem.exists(modded)) return modded;
 		}
 		#end
+		if(parentfolder == "mobile")
+			return getSharedPath('mobile/$file');
 
 		if (parentfolder != null)
 			return getFolderPath(file, parentfolder);
@@ -159,6 +161,7 @@ class Paths
 	inline static public function inst(song:String, ?modsAllowed:Bool = true):Sound
 		return returnSound('${formatToSongPath(song)}/Inst', 'songs', modsAllowed);
 
+	
 	inline static public function voices(song:String, postfix:String = null, ?modsAllowed:Bool = true):Sound
 	{
 		var songKey:String = '${formatToSongPath(song)}/Voices';
@@ -237,12 +240,11 @@ class Paths
 
 	inline static public function font(key:String)
 	{
-		var folderKey:String = Language.getFileTranslation('fonts/$key');
 		#if MODS_ALLOWED
-		var file:String = modFolders(folderKey);
+		var file:String = modsFont(key);
 		if(FileSystem.exists(file)) return file;
 		#end
-		return 'assets/$folderKey';
+		return 'assets/fonts/$key';
 	}
 
 	public static function fileExists(key:String, type:AssetType, ?ignoreMods:Bool = false, ?parentFolder:String = null)
@@ -360,7 +362,7 @@ class Paths
 
 	inline static public function formatToSongPath(path:String) {
 		final invalidChars = ~/[~&;:<>#\s]/g;
-		final hideChars = ~/[.,'"%?!]/g;
+		final hideChars = ~/[,'"%?!]/g;
 
 		return hideChars.replace(invalidChars.replace(path, '-'), '').trim().toLowerCase();
 	}
@@ -393,7 +395,10 @@ class Paths
 
 	#if MODS_ALLOWED
 	inline static public function mods(key:String = '')
-		return 'mods/' + key;
+		return #if mobile Sys.getCwd() + #end 'mods/' + key;
+
+	inline static public function modsFont(key:String)
+		return modFolders('fonts/' + key);
 
 	inline static public function modsJson(key:String)
 		return modFolders('data/' + key + '.json');
@@ -417,22 +422,83 @@ class Paths
 		return modFolders('images/' + key + '.json');
 
 	static public function modFolders(key:String)
-	{
-		if(Mods.currentModDirectory != null && Mods.currentModDirectory.length > 0)
 		{
-			var fileToCheck:String = mods(Mods.currentModDirectory + '/' + key);
-			if(FileSystem.exists(fileToCheck))
-				return fileToCheck;
+			if (Mods.currentModDirectory != null && Mods.currentModDirectory.length > 0)
+			{
+				var fileToCheck:String = mods(Mods.currentModDirectory + '/' + key);
+				if (FileSystem.exists(fileToCheck))
+					return fileToCheck;
+				#if linux
+				else
+				{
+					var newPath:String = findFile(key);
+					if (newPath != null)
+						return newPath;
+				}
+				#end
+			}
+	
+			for (mod in Mods.getGlobalMods())
+			{
+				var fileToCheck:String = mods(mod + '/' + key);
+				if (FileSystem.exists(fileToCheck))
+					return fileToCheck;
+				#if linux
+				else
+				{
+					var newPath:String = findFile(key);
+					if (newPath != null)
+						return newPath;
+				}
+				#end
+			}
+			return #if mobile Sys.getCwd() + #end 'mods/' + key;
 		}
-
-		for(mod in Mods.getGlobalMods())
+	
+		#if linux
+		static function findFile(key:String):String // used above ^^^^
+		{ 
+			var targetDir:Array<String> = key.replace('\\','/').split('/');
+			var searchDir:String = mods(Mods.currentModDirectory + '/' + targetDir[0]);
+			targetDir.remove(targetDir[0]);
+	
+			for (x in targetDir)
+			{
+				if(x == '') continue;
+				var newPart:String = findNode(searchDir, x);
+				if (newPart != null)
+				{
+					searchDir += '/' + newPart;
+				}
+				else return null;
+			}
+			//trace('MATCH WITH $key! RETURNING $searchDir');
+			return searchDir;
+		}
+	
+		static function findNode(dir:String, key:String):String
 		{
-			var fileToCheck:String = mods(mod + '/' + key);
-			if(FileSystem.exists(fileToCheck))
-				return fileToCheck;
+			var allFiles:Array<String> = null;
+			try
+			{
+				allFiles = Paths.readDirectory(dir);
+			}
+			catch (e)
+			{
+				return null;
+			}
+	
+			var allSearchies:Array<String> = allFiles.map(s -> s.toLowerCase());
+			for (i => name in allSearchies)
+			{
+				if (key.toLowerCase() == name)
+				{
+					return allFiles[i];
+				}
+			}
+			return null;
 		}
-		return 'mods/' + key;
-	}
+		#end
 	#end
 
 	#if flxanimate
@@ -505,4 +571,25 @@ class Paths
 		spr.loadAtlasEx(folderOrImg, spriteJson, animationJson);
 	}
 	#end
+
+	public static function readDirectory(directory:String):Array<String>
+	{
+		#if MODS_ALLOWED
+		return FileSystem.readDirectory(directory);
+		#else
+		var dirs:Array<String> = [];
+		for(dir in Assets.list().filter(folder -> folder.startsWith(directory)))
+		{
+			@:privateAccess
+			for(library in lime.utils.Assets.libraries.keys())
+			{
+				if(library != 'default' && Assets.exists('$library:$dir') && (!dirs.contains('$library:$dir') || !dirs.contains(dir)))
+					dirs.push('$library:$dir');
+				else if(Assets.exists(dir) && !dirs.contains(dir))
+					dirs.push(dir);
+			}
+		}
+		return dirs;
+		#end
+	}
 }

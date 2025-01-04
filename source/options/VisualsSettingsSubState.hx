@@ -7,6 +7,7 @@ import objects.Alphabet;
 
 class VisualsSettingsSubState extends BaseOptionsMenu
 {
+	public static var pauseMusics:Array<String> = ['None', 'Tea Time', 'Breakfast', 'Breakfast (Pico)'];
 	var noteOptionID:Int = -1;
 	var notes:FlxTypedGroup<StrumNote>;
 	var splashes:FlxTypedGroup<NoteSplash>;
@@ -49,7 +50,7 @@ class VisualsSettingsSubState extends BaseOptionsMenu
 
 			noteSkins.insert(0, ClientPrefs.defaultData.noteSkin); //Default skin always comes first
 			var option:Option = new Option('Note Skins:',
-				"Select your prefered Note skin.",
+				"Select your preferred Note skin.",
 				'noteSkin',
 				STRING,
 				noteSkins);
@@ -58,6 +59,7 @@ class VisualsSettingsSubState extends BaseOptionsMenu
 			noteOptionID = optionsArray.length - 1;
 		}
 		
+		if (PlayState.SONG != null) PlayState.SONG.splashSkin = null; // Fix this component not working when entering from a song!
 		var noteSplashes:Array<String> = Mods.mergeAllTextsNamed('images/noteSplashes/list.txt');
 		if(noteSplashes.length > 0)
 		{
@@ -66,12 +68,27 @@ class VisualsSettingsSubState extends BaseOptionsMenu
 
 			noteSplashes.insert(0, ClientPrefs.defaultData.splashSkin); //Default skin always comes first
 			var option:Option = new Option('Note Splashes:',
-				"Select your prefered Note Splash variation.",
+				"Select your preferred Note Splash variation or turn it off.",
 				'splashSkin',
 				STRING,
 				noteSplashes);
 			addOption(option);
 			option.onChange = onChangeSplashSkin;
+		}
+
+		var holdSkins:Array<String> = Mods.mergeAllTextsNamed('images/holdCovers/list.txt');
+		if(holdSkins.length > 0)
+		{
+			if(!holdSkins.contains(ClientPrefs.data.holdSkin))
+				ClientPrefs.data.holdSkin = ClientPrefs.defaultData.holdSkin; //Reset to default if saved splashskin couldnt be found
+			holdSkins.remove(ClientPrefs.defaultData.holdSkin);
+			holdSkins.insert(0, ClientPrefs.defaultData.holdSkin); //Default skin always comes first
+			var option:Option = new Option('Hold Splashes:',
+				"Select your preferred Hold Splash variation or turn it off.",
+				'holdSkin',
+				STRING,
+				holdSkins);
+			addOption(option);
 		}
 
 		var option:Option = new Option('Note Splash Opacity',
@@ -85,6 +102,17 @@ class VisualsSettingsSubState extends BaseOptionsMenu
 		option.decimals = 1;
 		addOption(option);
 		option.onChange = playNoteSplashes;
+
+		var option:Option = new Option('Note Hold Splash Opacity',
+			'How much transparent should the Note Hold Splash be.\n0% disables it.',
+			'holdSplashAlpha',
+			PERCENT);
+		option.scrollSpeed = 1.6;
+		option.minValue = 0.0;
+		option.maxValue = 1;
+		option.changeValue = 0.1;
+		option.decimals = 1;
+		addOption(option);
 
 		var option:Option = new Option('Hide HUD',
 			'If checked, hides most HUD elements.',
@@ -128,20 +156,27 @@ class VisualsSettingsSubState extends BaseOptionsMenu
 		option.decimals = 1;
 		addOption(option);
 		
-		#if !mobile
 		var option:Option = new Option('FPS Counter',
 			'If unchecked, hides FPS Counter.',
 			'showFPS',
 			BOOL);
 		addOption(option);
 		option.onChange = onChangeFPSCounter;
+
+		#if sys
+		var option:Option = new Option('VSync',
+			'If checked, Enables VSync fixing any screen tearing at the cost of capping the FPS to screen refresh rate.\n(Must restart the game to have an effect)',
+			'vsync',
+			BOOL);
+		option.onChange = onChangeVSync;
+		addOption(option);
 		#end
 		
 		var option:Option = new Option('Pause Music:',
 			"What song do you prefer for the Pause Screen?",
 			'pauseMusic',
 			STRING,
-			['None', 'Tea Time', 'Breakfast', 'Breakfast (Pico)']);
+			pauseMusics);
 		addOption(option);
 		option.onChange = onChangePauseMusic;
 		
@@ -271,11 +306,21 @@ class VisualsSettingsSubState extends BaseOptionsMenu
 		super.destroy();
 	}
 
-	#if !mobile
 	function onChangeFPSCounter()
 	{
 		if(Main.fpsVar != null)
 			Main.fpsVar.visible = ClientPrefs.data.showFPS;
+		if(Main.memoryCounter != null)
+			Main.memoryCounter.visible = ClientPrefs.data.showFPS;
+	}
+
+	#if sys
+	function onChangeVSync()
+	{
+		var file:String = StorageUtil.rootDir + "vsync.txt";
+		if(FileSystem.exists(file))
+			FileSystem.deleteFile(file);
+		File.saveContent(file, Std.string(ClientPrefs.data.vsync));
 	}
 	#end
 }

@@ -38,15 +38,16 @@ class CreditsState extends MusicBeatState
 		#end
 
 		var defaultList:Array<Array<String>> = [ //Name - Icon name - Description - Link - BG Color
-			["Xythe Engine Team"],
-			["TheWolfLovers",		"ace",		"Owner, Programmer, concept artist and artist",					"https://gamejolt.com/invite/TheWolfLovers",	"fff200"],
-			["FrostyDoge!",			"frosty",	"Programmer (great help!)",							"https://www.youtube.com/@FrostyDoge-w2t",			"d0a557"],
+			['P-Slice Engine Team'],
+			['Mikolka9144',			'mikolka',			'Did everything for P-slice',								 'https://gamebanana.com/members/3329541',									'2ebcfa'],
+			['mcagabe19',			'lily',             'Porter of P-slice for mobile devices and creator of linc_luajit-rewritten (used for mobile builds)',                       'https://youtube.com/@mcagabe19',		'FFE7C0'],
 			[""],
-			["OS Engine"],
-			["OS Engine", "blank", "I (TheWolfLovers) stole some code and assets for winning icons.", "https://github.com/notweuz/FNF-OSEngine?tab=readme-ov-file", "#34cceb"],
-			['notweuz_', 'weuz', 'Main Programmer of OS Engine', 'https://twitter.com/notweuz_', '8633F2'],
-			['nelifs', 'nelifs', 'Second Programmer and Designer of OS Engine', 'https://github.com/nelifs', '1C1C1C'],
-			['Cooljer', 'cooljer', 'Main Artist of OS Engine', 'https://twitter.com/cooljer_', '3360F2'],
+			['P-Slice Contributors'],
+			["Fazecarl",			'fazecarl',			'Made the new logo for P-Slice',									'https://gamebanana.com/members/2121406',	'29170a'],
+			["Mykarm",			'mykarm',			'Made the new icon for P-Slice',									'https://x.com/cronviersmeat/status/1849059676467417311?s=46&t=4dcTT7PAMkRJ8zYd4LgTow',	'29170a'],
+			[""],
+			["P-Slice server"],
+			["Join our community",	"ppslice",			"",																"https://discord.gg/9FCyCqEvRf",			"5e36c4"],
 			[""],
 			["Psych Engine Team"],
 			["Shadow Mario",		"shadowmario",		"Main Programmer and Head of Psych Engine",					"https://ko-fi.com/shadowmario",	"444444"],
@@ -69,16 +70,14 @@ class CreditsState extends MusicBeatState
 			["superpowers04",		"superpowers04",	"LUA JIT Fork",												"https://x.com/superpowers04",		"B957ED"],
 			["CheemsAndFriends",	"cheems",			"Creator of FlxAnimate",									"https://x.com/CheemsnFriendos",	"E1E1E1"],
 			[""],
-			["Funkin' Crew"],
+
+			["The Funkin' Crew Inc"],
 			["ninjamuffin99",		"ninjamuffin99",	"Programmer of Friday Night Funkin'",						"https://x.com/ninja_muffin99",		"CF2D2D"],
 			["PhantomArcade",		"phantomarcade",	"Animator of Friday Night Funkin'",							"https://x.com/PhantomArcade3K",	"FADC45"],
 			["evilsk8r",			"evilsk8r",			"Artist of Friday Night Funkin'",							"https://x.com/evilsk8r",			"5ABD4B"],
 			["kawaisprite",			"kawaisprite",		"Composer of Friday Night Funkin'",							"https://x.com/kawaisprite",		"378FC7"],
-			[""],
-			["Psych Engine Discord"],
-			["Join the Psych Ward!", "discord", "", "https://discord.gg/2ka77eMXDv", "5165F6"]
 		];
-	
+		
 		for(i in defaultList)
 			creditsStuff.push(i);
 	
@@ -138,6 +137,9 @@ class CreditsState extends MusicBeatState
 		bg.color = CoolUtil.colorFromString(creditsStuff[curSelected][4]);
 		intendedColor = bg.color;
 		changeSelection();
+		#if TOUCH_CONTROLS_ALLOWED
+		addTouchPad('UP_DOWN', 'A_B');
+		#end
 		super.create();
 	}
 

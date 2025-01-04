@@ -12,17 +12,31 @@ class OutdatedState extends MusicBeatState
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		add(bg);
 
-		warnText = new FlxText(0, 0, FlxG.width,
-			"Sup bro, looks like you're running an   \n
-			outdated version of Xythe Engine (" + MainMenuState.psychEngineVersion + "),\n
+		var guh:String;
+
+		if (controls.mobileC) {
+			guh = "Sup kiddo, looks like you're running an   \n
+			outdated version of P-Slice Engine (" + MainMenuState.pSliceVersion + "),\n
+			please update to " + TitleState.updateVersion + "!\n
+			Press B to proceed anyway.\n
+			\n
+			Thank you for using the Engine!";
+		} else {
+			guh = "Sup bro, looks like you're running an   \n
+			outdated version of P-Slice Engine (" + MainMenuState.pSliceVersion + "),\n
 			please update to " + TitleState.updateVersion + "!\n
 			Press ESCAPE to proceed anyway.\n
 			\n
-			Thank you for using Xythe Engine!",
-			32);
+			Thank you for using the Engine!";
+		}
+
+		warnText = new FlxText(0, 0, FlxG.width, guh, 32);
 		warnText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER);
 		warnText.screenCenter(Y);
 		add(warnText);
+		#if TOUCH_CONTROLS_ALLOWED
+		addTouchPad('NONE', 'A_B');
+		#end
 	}
 
 	override function update(elapsed:Float)
@@ -30,7 +44,7 @@ class OutdatedState extends MusicBeatState
 		if(!leftState) {
 			if (controls.ACCEPT) {
 				leftState = true;
-				CoolUtil.browserLoad("https://github.com/ShadowMario/FNF-PsychEngine/releases");
+				CoolUtil.browserLoad("https://github.com/Psych-Slice/P-Slice/releases");
 			}
 			else if(controls.BACK) {
 				leftState = true;

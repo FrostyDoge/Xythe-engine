@@ -6,8 +6,6 @@ import shaders.RGBPalette;
 
 import states.editors.NoteSplashEditorState;
 
-import flixel.system.FlxAssets.FlxShader;
-
 private typedef RGB = {
 	r:Null<Int>,
 	g:Null<Int>,
@@ -62,7 +60,7 @@ class NoteSplash extends FlxSprite
 
 		var skin:String = splash;
 		if (skin == null || skin.length < 1)
-			skin = try PlayState.SONG.splashSkin catch(e) null;
+			skin =  PlayState.SONG?.splashSkin;
 
 		if (skin == null || skin.length < 1)
 			skin = DEFAULT_SKIN + getSplashSkinPostfix();

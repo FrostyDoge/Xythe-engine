@@ -1,5 +1,6 @@
 package states;
 
+import mikolka.compatibility.ModsHelper;
 import backend.WeekData;
 import backend.Highscore;
 import backend.Song;
@@ -12,6 +13,7 @@ import objects.MenuCharacter;
 
 import options.GameplayChangersSubstate;
 import substates.ResetScoreSubState;
+import substates.StickerSubState;
 
 import backend.StageData;
 
@@ -43,13 +45,36 @@ class StoryMenuState extends MusicBeatState
 
 	var loadedWeeks:Array<WeekData> = [];
 
+	var stickerSubState:StickerSubState;
+	public function new(?stickers:StickerSubState = null)
+	{
+		super();
+	  
+		if (stickers != null)
+		{
+			stickerSubState = stickers;
+		}
+	}
+
 	override function create()
 	{
-		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
+
+		if (stickerSubState != null)
+			{
+			  //this.persistentUpdate = true;
+			  //this.persistentDraw = true;
+		
+			  openSubState(stickerSubState);
+			  ModsHelper.clearStoredWithoutStickers();
+			  stickerSubState.degenStickers();
+			  FlxG.sound.playMusic(Paths.music('freakyMenu'));
+			}
+		else Paths.clearStoredMemory();
 
 		persistentUpdate = persistentDraw = true;
 		PlayState.isStoryMode = true;
+		PlayState.altInstrumentals = null; //? P-Slice
 		WeekData.reloadWeekFiles(true);
 
 		#if DISCORD_ALLOWED
@@ -57,11 +82,14 @@ class StoryMenuState extends MusicBeatState
 		DiscordClient.changePresence("In the Menus", null);
 		#end
 
+		final accept:String = controls.mobileC ? "A" : "ACCEPT";
+		final reject:String = controls.mobileC ? "B" : "BACK";
+
 		if(WeekData.weeksList.length < 1)
 		{
 			FlxTransitionableState.skipNextTransIn = true;
 			persistentUpdate = false;
-			MusicBeatState.switchState(new states.ErrorState("NO WEEKS ADDED FOR STORY MODE\n\nPress ACCEPT to go to the Week Editor Menu.\nPress BACK to return to Main Menu.",
+			MusicBeatState.switchState(new states.ErrorState("NO LEVELS ADDED FOR STORY MODE\n\nPress " + accept + " to go to the Week Editor Menu.\nPress " + reject + " to return to Main Menu.",
 				function() MusicBeatState.switchState(new states.editors.WeekEditorState()),
 				function() MusicBeatState.switchState(new states.MainMenuState())));
 			return;
@@ -69,7 +97,7 @@ class StoryMenuState extends MusicBeatState
 
 		if(curWeek >= WeekData.weeksList.length) curWeek = 0;
 
-		scoreText = new FlxText(10, 10, 0, Language.getPhrase('week_score', 'WEEK SCORE: {1}', [lerpScore]), 36);
+		scoreText = new FlxText(10, 10, 0, Language.getPhrase('week_score', 'LEVEL SCORE: {1}', [lerpScore]), 36);
 		scoreText.setFormat(Paths.font("vcr.ttf"), 32);
 
 		txtWeekTitle = new FlxText(FlxG.width * 0.7, 10, 0, "", 32);
@@ -185,6 +213,10 @@ class StoryMenuState extends MusicBeatState
 		changeWeek();
 		changeDifficulty();
 
+		#if TOUCH_CONTROLS_ALLOWED
+		addTouchPad('LEFT_FULL', 'A_B_X_Y');
+		#end
+
 		super.create();
 	}
 
@@ -192,6 +224,11 @@ class StoryMenuState extends MusicBeatState
 		persistentUpdate = true;
 		changeWeek();
 		super.closeSubState();
+
+		#if TOUCH_CONTROLS_ALLOWED
+		removeTouchPad();
+		addTouchPad('LEFT_FULL', 'A_B_X_Y');
+		#end
 	}
 
 	override function update(elapsed:Float)
@@ -214,7 +251,7 @@ class StoryMenuState extends MusicBeatState
 			lerpScore = Math.floor(FlxMath.lerp(intendedScore, lerpScore, Math.exp(-elapsed * 30)));
 			if(Math.abs(intendedScore - lerpScore) < 10) lerpScore = intendedScore;
 	
-			scoreText.text = Language.getPhrase('week_score', 'WEEK SCORE: {1}', [lerpScore]);
+			scoreText.text = Language.getPhrase('week_score', 'LEVEL SCORE: {1}', [lerpScore]);
 		}
 
 		// FlxG.watch.addQuick('font', scoreText.font);
@@ -260,15 +297,21 @@ class StoryMenuState extends MusicBeatState
 			else if (changeDiff)
 				changeDifficulty();
 
-			if(FlxG.keys.justPressed.CONTROL)
+			if(FlxG.keys.justPressed.CONTROL #if TOUCH_CONTROLS_ALLOWED || touchPad.buttonX.justPressed #end)
 			{
 				persistentUpdate = false;
 				openSubState(new GameplayChangersSubstate());
+				#if TOUCH_CONTROLS_ALLOWED
+				removeTouchPad();
+				#end
 			}
-			else if(controls.RESET)
+			else if(controls.RESET #if TOUCH_CONTROLS_ALLOWED || touchPad.buttonY.justPressed #end)
 			{
 				persistentUpdate = false;
 				openSubState(new ResetScoreSubState('', curDifficulty, '', curWeek));
+				#if TOUCH_CONTROLS_ALLOWED
+				removeTouchPad();
+				#end
 				//FlxG.sound.play(Paths.sound('scrollMenu'));
 			}
 			else if (controls.ACCEPT)
@@ -312,6 +355,9 @@ class StoryMenuState extends MusicBeatState
 			{
 				PlayState.storyPlaylist = songArray;
 				PlayState.isStoryMode = true;
+				PlayState.storyDifficultyColor = sprDifficulty.color;
+				PlayState.storyCampaignTitle = txtWeekTitle.text;
+				if(PlayState.storyCampaignTitle == "") PlayState.storyCampaignTitle = "Unnamed week";
 				selectedWeek = true;
 	
 				var diffic = Difficulty.getFilePath(curDifficulty);
@@ -353,7 +399,6 @@ class StoryMenuState extends MusicBeatState
 			{
 				#if !SHOW_LOADING_SCREEN FlxG.sound.music.stop(); #end
 				LoadingState.loadAndSwitchState(new PlayState(), true);
-				FreeplayState.destroyFreeplayVocals();
 			});
 			
 			#if (MODS_ALLOWED && DISCORD_ALLOWED)

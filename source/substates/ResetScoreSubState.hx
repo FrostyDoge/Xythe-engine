@@ -22,6 +22,7 @@ class ResetScoreSubState extends MusicBeatSubstate
 	// Week -1 = Freeplay
 	public function new(song:String, difficulty:Int, character:String, week:Int = -1)
 	{
+		controls.isInSubstate = true;
 		this.song = song;
 		this.difficulty = difficulty;
 		this.week = week;
@@ -72,6 +73,10 @@ class ResetScoreSubState extends MusicBeatSubstate
 		
 		for(letter in yesText.letters) letter.color = FlxColor.RED;
 		updateOptions();
+
+		#if TOUCH_CONTROLS_ALLOWED
+		addTouchPad('LEFT_RIGHT', 'A_B');
+		#end
 	}
 
 	override function update(elapsed:Float)
@@ -92,6 +97,7 @@ class ResetScoreSubState extends MusicBeatSubstate
 		}
 		if(controls.BACK) {
 			FlxG.sound.play(Paths.sound('cancelMenu'), 1);
+			controls.isInSubstate = false;
 			close();
 		} else if(controls.ACCEPT) {
 			if(onYes) {
@@ -102,6 +108,7 @@ class ResetScoreSubState extends MusicBeatSubstate
 				}
 			}
 			FlxG.sound.play(Paths.sound('cancelMenu'), 1);
+			controls.isInSubstate = false;
 			close();
 		}
 		super.update(elapsed);

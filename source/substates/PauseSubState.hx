@@ -1,13 +1,15 @@
 package substates;
 
+import mikolka.vslice.freeplay.FreeplayState;
 import backend.WeekData;
 import backend.Highscore;
 import backend.Song;
 
 import flixel.util.FlxStringUtil;
+import flixel.addons.transition.FlxTransitionableState;
 
 import states.StoryMenuState;
-import states.FreeplayState;
+import substates.StickerSubState;
 import options.OptionsState;
 
 class PauseSubState extends MusicBeatSubstate
@@ -15,7 +17,14 @@ class PauseSubState extends MusicBeatSubstate
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
 	var menuItems:Array<String> = [];
-	var menuItemsOG:Array<String> = ['Resume', 'Restart Song', 'Change Difficulty', 'Options', 'Exit to menu'];
+	var menuItemsOG:Array<String> = [
+		'Resume', 
+		'Restart Song',
+		#if TOUCH_CONTROLS_ALLOWED 'Chart Editor', #end
+	 	'Change Difficulty', 
+		'Options', 
+		'Exit to menu'
+	];
 	var difficultyChoices = [];
 	var curSelected:Int = 0;
 
@@ -28,10 +37,32 @@ class PauseSubState extends MusicBeatSubstate
 	var missingTextBG:FlxSprite;
 	var missingText:FlxText;
 
+	var inVid:Bool;
+	public var cutscene_allowSkipping = true;
+	public var cutscene_hardReset = true;
+	public var cutscene_type = true;
+	public var specialAction:PauseSpecialAction = PauseSpecialAction.NOTHING;
+
+	var cutscene_branding:String = 'lol';
+	var cutscene_resetTxt:String = 'lol';
+	var cutscene_skipTxt:String = 'lol';
+
 	public static var songName:String = null;
 
+	public function new(inCutscene:Bool = false,type:PauseType = PauseType.CUTSCENE) {
+		super();
+		cutscene_branding = switch(type){
+			case VIDEO: "Video";
+			case CUTSCENE: "Cutscene";
+			case DIALOGUE: "Dialogue";
+		};
+		cutscene_resetTxt = 'Restart $cutscene_branding';
+		cutscene_skipTxt = 'Skip $cutscene_branding';
+		this.inVid = inCutscene;
+	}
 	override function create()
 	{
+		controls.isInSubstate = true;
 		if(Difficulty.list.length < 2) menuItemsOG.remove('Change Difficulty'); //No need to change difficulty if there is only one!
 
 		if(PlayState.chartingMode)
@@ -48,7 +79,13 @@ class PauseSubState extends MusicBeatSubstate
 			menuItemsOG.insert(4 + num, 'Toggle Practice Mode');
 			menuItemsOG.insert(5 + num, 'Toggle Botplay');
 		}
-		menuItems = menuItemsOG;
+		if(inVid) {
+			menuItems = ['Resume',cutscene_resetTxt , cutscene_skipTxt , 'Options', 'Exit to menu'];
+			if(!cutscene_allowSkipping) menuItems.remove(cutscene_skipTxt);
+
+		}
+		else menuItems = menuItemsOG;
+		
 
 		for (i in 0...Difficulty.list.length) {
 			var diff:String = Difficulty.getString(i);
@@ -82,13 +119,15 @@ class PauseSubState extends MusicBeatSubstate
 		levelInfo.updateHitbox();
 		add(levelInfo);
 
-		var levelDifficulty:FlxText = new FlxText(20, 15 + 32, 0, Difficulty.getString().toUpperCase(), 32);
+		var levelDifficulty:FlxText = new FlxText(20, 15 + 32, 0, "Difficulty: "+CoolUtil.FUL(Difficulty.getString()), 32);
 		levelDifficulty.scrollFactor.set();
 		levelDifficulty.setFormat(Paths.font('vcr.ttf'), 32);
 		levelDifficulty.updateHitbox();
 		add(levelDifficulty);
 
-		var blueballedTxt:FlxText = new FlxText(20, 15 + 64, 0, Language.getPhrase("blueballed", "Blueballed: {1}", [PlayState.deathCounter]), 32);
+		
+		var ballsTxt = inVid ? '$cutscene_branding Paused' : Language.getPhrase("blueballed", "{1} Blue Balls", [PlayState.deathCounter]);
+		var blueballedTxt:FlxText = new FlxText(20, 15 + 64, 0, ballsTxt , 32);
 		blueballedTxt.scrollFactor.set();
 		blueballedTxt.setFormat(Paths.font('vcr.ttf'), 32);
 		blueballedTxt.updateHitbox();
@@ -143,6 +182,11 @@ class PauseSubState extends MusicBeatSubstate
 		regenMenu();
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 
+		#if TOUCH_CONTROLS_ALLOWED
+		addTouchPad(PlayState.chartingMode ? 'LEFT_FULL' : 'UP_DOWN', 'A');
+		addTouchPadCamera();
+		#end
+
 		super.create();
 	}
 	
@@ -167,6 +211,7 @@ class PauseSubState extends MusicBeatSubstate
 
 		if(controls.BACK)
 		{
+			specialAction = RESUME;
 			close();
 			return;
 		}
@@ -265,6 +310,8 @@ class PauseSubState extends MusicBeatSubstate
 			switch (daSelected)
 			{
 				case "Resume":
+					Paths.clearUnusedMemory();
+					specialAction = RESUME;
 					close();
 				case 'Change Difficulty':
 					menuItems = difficultyChoices;
@@ -276,6 +323,8 @@ class PauseSubState extends MusicBeatSubstate
 					practiceText.visible = PlayState.instance.practiceMode;
 				case "Restart Song":
 					restartSong();
+				case 'Chart Editor':
+					PlayState.instance.openChartEditor();
 				case "Leave Charting Mode":
 					restartSong();
 					PlayState.chartingMode = false;
@@ -323,18 +372,41 @@ class PauseSubState extends MusicBeatSubstate
 					PlayState.seenCutscene = false;
 
 					PlayState.instance.canResync = false;
-					Mods.loadTopMod();
-					if(PlayState.isStoryMode)
-						MusicBeatState.switchState(new StoryMenuState());
-					else 
-						MusicBeatState.switchState(new FreeplayState());
-
-					FlxG.sound.playMusic(Paths.music('freakyMenu'));
+					//! not yet
+					//Mods.loadTopMod();
+					if (PlayState.isStoryMode)
+						{
+							PlayState.storyPlaylist = [];
+							openSubState(new StickerSubState(null, (sticker) -> new StoryMenuState(sticker)));
+						}
+						else
+						{
+							openSubState(new StickerSubState(null, (sticker) -> FreeplayState.build(null, sticker)));
+						}
 					PlayState.changedDifficulty = false;
 					PlayState.chartingMode = false;
 					FlxG.camera.followLerp = 0;
+				default:
+					if(daSelected == cutscene_skipTxt){
+						specialAction = SKIP;
+						close();
+					}else if(daSelected == cutscene_resetTxt){
+						if(cutscene_hardReset) restartSong();
+							else{
+								specialAction = RESTART;
+								close();
+							}
+					}
 			}
 		}
+		
+		#if TOUCH_CONTROLS_ALLOWED
+		if (touchPad == null) //sometimes it dosent add the tpad, hopefully this fixes it
+		{
+			addTouchPad(PlayState.chartingMode ? 'LEFT_FULL' : 'UP_DOWN', 'A');
+			addTouchPadCamera();
+		}
+		#end
 	}
 
 	function deleteSkipTimeText()
@@ -365,6 +437,7 @@ class PauseSubState extends MusicBeatSubstate
 
 	override function destroy()
 	{
+		controls.isInSubstate = false;
 		pauseMusic.destroy();
 		super.destroy();
 	}
@@ -434,4 +507,17 @@ class PauseSubState extends MusicBeatSubstate
 
 	function updateSkipTimeText()
 		skipTimeText.text = FlxStringUtil.formatTime(Math.max(0, Math.floor(curTime / 1000)), false) + ' / ' + FlxStringUtil.formatTime(Math.max(0, Math.floor(FlxG.sound.music.length / 1000)), false);
+
+	
+}
+enum PauseSpecialAction {
+	NOTHING;
+	RESTART;
+	SKIP;
+	RESUME;
+}
+enum PauseType{
+	VIDEO;
+	CUTSCENE;
+	DIALOGUE;
 }

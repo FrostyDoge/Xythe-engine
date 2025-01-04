@@ -13,6 +13,7 @@ import flixel.util.FlxStringUtil;
 class DiscordClient
 {
 	public static var isInitialized:Bool = false;
+	//private inline static final _defaultID:String = "1272667686081527838"; //P-Slice engine
 	private inline static final _defaultID:String = "1321226168007135374";
 	public static var clientID(default, set):String = _defaultID;
 	private static var presence:DiscordPresence = new DiscordPresence();
@@ -98,7 +99,7 @@ class DiscordClient
 		isInitialized = true;
 	}
 
-	public static function changePresence(details:String = 'Eating a Burrito... (in menus)', ?state:String, ?smallImageKey:String, ?hasStartTimestamp:Bool, ?endTimestamp:Float, largeImageKey:String = 'icon')
+	public static function changePresence(details:String = 'In the Menus', ?state:String, ?smallImageKey:String, ?hasStartTimestamp:Bool, ?endTimestamp:Float, largeImageKey:String = 'icon')
 	{
 		var startTimestamp:Float = 0;
 		if (hasStartTimestamp) startTimestamp = Date.now().getTime();
@@ -108,7 +109,7 @@ class DiscordClient
 		presence.details = details;
 		presence.smallImageKey = smallImageKey;
 		presence.largeImageKey = largeImageKey;
-		presence.largeImageText = "Engine Version: " + states.MainMenuState.xytheEngineVersion;
+		presence.largeImageText = 'Engine Version: ${states.MainMenuState.pSliceVersion} (${states.MainMenuState.psychEngineVersion})';
 		// Obtained times are in milliseconds so they are divided so Discord can use it
 		presence.startTimestamp = Std.int(startTimestamp / 1000);
 		presence.endTimestamp = Std.int(endTimestamp / 1000);

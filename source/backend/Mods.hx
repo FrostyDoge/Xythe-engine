@@ -1,7 +1,6 @@
 package backend;
 
 import openfl.utils.Assets;
-
 import haxe.Json;
 
 typedef ModsList = {
@@ -17,6 +16,7 @@ class Mods
 		'characters',
 		'custom_events',
 		'custom_notetypes',
+		'registry',
 		'data',
 		'songs',
 		'music',
@@ -53,7 +53,7 @@ class Mods
 		#if MODS_ALLOWED
 		var modsFolder:String = Paths.mods();
 		if(FileSystem.exists(modsFolder)) {
-			for (folder in FileSystem.readDirectory(modsFolder))
+			for (folder in Paths.readDirectory(modsFolder))
 			{
 				var path = haxe.io.Path.join([modsFolder, folder]);
 				if (FileSystem.isDirectory(path) && !ignoreModFolders.contains(folder.toLowerCase()) && !list.contains(folder))
@@ -123,6 +123,16 @@ class Mods
 			{
 				var folder:String = Paths.mods(Mods.currentModDirectory + '/' + fileToFind);
 				if(FileSystem.exists(folder) && !foldersToCheck.contains(folder)) foldersToCheck.push(folder);
+				#if linux
+				else{
+					@:privateAccess
+					folder = Paths.findFile(fileToFind);
+					if(folder != null){
+						if(FileSystem.isDirectory(folder)) folder += '/';
+						if(FileSystem.exists(folder) &&!foldersToCheck.contains(folder)) foldersToCheck.push(folder);
+					}
+				}
+				#end
 			}
 		}
 		#end
