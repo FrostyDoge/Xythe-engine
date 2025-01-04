@@ -27,9 +27,11 @@ import states.TitleState;
 	public var lastFreeplayMod:String = '||bf';
 
 	public var downScroll:Bool = false;
+	public var animation:Bool = true;
 	public var middleScroll:Bool = false;
 	public var opponentStrums:Bool = true;
 	public var showFPS:Bool = true;
+	public var transparent:Bool = true;
 	public var flashing:Bool = true;
 	public var autoPause:Bool = true;
 	public var antialiasing:Bool = true;
