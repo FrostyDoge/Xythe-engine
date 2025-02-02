@@ -12,6 +12,7 @@ import options.OptionsState;
 class MainMenuState extends MusicBeatState
 {
 	public static var psychEngineVersion:String = '1.0'; // This is also used for Discord RPC
+	public static var xytheEngineVersion:String = "0.0.2";
 	public static var pSliceVersion:String = '2.2.2'; 
 	public static var funkinVersion:String = '0.5.3'; // Version of funkin' we are emulationg
 	public static var curSelected:Int = 0;
@@ -24,7 +25,6 @@ class MainMenuState extends MusicBeatState
 		#if MODS_ALLOWED 'mods', #end
 		#if ACHIEVEMENTS_ALLOWED 'awards', #end
 		'credits',
-		#if !switch 'donate', #end
 		'options'
 	];
 
@@ -98,14 +98,18 @@ class MainMenuState extends MusicBeatState
 
 		var psychVer:FlxText = new FlxText(0, FlxG.height - 18, FlxG.width, "Psych Engine " + psychEngineVersion, 12);
 		var fnfVer:FlxText = new FlxText(0, FlxG.height - 18, FlxG.width, 'v${funkinVersion} (P-slice ${pSliceVersion})', 12);
+		var xytheVer:FlxText = new FlxText(0, FlxG.height - 38, FlxG.width, 'Xythe Engine v${xytheEngineVersion}', 12);
 
 		psychVer.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		fnfVer.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		
+		xytheVer.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+
 		psychVer.scrollFactor.set();
 		fnfVer.scrollFactor.set();
+		xytheVer.scrollFactor.set();
 		add(psychVer);
 		add(fnfVer);
+		add(xytheVer);
 		//var fnfVer:FlxText = new FlxText(12, FlxG.height - 24, 0, "Friday Night Funkin' ", 12);
 	
 		changeItem();

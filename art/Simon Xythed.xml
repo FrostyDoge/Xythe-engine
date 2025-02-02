@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Simon Xythed.png">
+	<!-- Created with Adobe Animate version 23.0.1.70 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Simon-full0000" x="0" y="0" width="453" height="641" pivotX="230.15" pivotY="243.95"/>
+	<SubTexture name="Sing left0000" x="453" y="0" width="461" height="638" pivotX="409.25" pivotY="368.75"/>
+	<SubTexture name="Sing left0001" x="914" y="0" width="461" height="638"/>
+	<SubTexture name="Sing left0002" x="1375" y="0" width="461" height="638"/>
+	<SubTexture name="Sing left0003" x="1836" y="0" width="461" height="638"/>
+	<SubTexture name="Sing left0004" x="1836" y="0" width="461" height="638"/>
+	<SubTexture name="Sing left0005" x="1836" y="0" width="461" height="638"/>
+	<SubTexture name="Sing left0006" x="1836" y="0" width="461" height="638"/>
+	<SubTexture name="Sing left0007" x="1836" y="0" width="461" height="638"/>
+	<SubTexture name="Sing left0008" x="1836" y="0" width="461" height="638"/>
+	<SubTexture name="Sing left0009" x="1836" y="0" width="461" height="638"/>
+	<SubTexture name="Sing left miss0000" x="2297" y="0" width="461" height="638" pivotX="409.25" pivotY="368.75"/>
+	<SubTexture name="Sing left miss0001" x="2297" y="0" width="461" height="638"/>
+	<SubTexture name="Sing left miss0002" x="2758" y="0" width="461" height="638"/>
+	<SubTexture name="Sing left miss0003" x="3219" y="0" width="461" height="638"/>
+	<SubTexture name="Sing left miss0004" x="0" y="641" width="461" height="638"/>
+	<SubTexture name="Sing left miss0005" x="461" y="641" width="461" height="638"/>
+	<SubTexture name="Sing left miss0006" x="922" y="641" width="461" height="638"/>
+	<SubTexture name="Sing left miss0007" x="1383" y="641" width="461" height="638"/>
+	<SubTexture name="Sing left miss0008" x="1844" y="641" width="461" height="638"/>
+	<SubTexture name="Sing left miss0009" x="2305" y="641" width="461" height="638"/>
+	<SubTexture name="Sing left miss0010" x="2766" y="641" width="461" height="638"/>
+	<SubTexture name="Sing left miss0011" x="3227" y="641" width="461" height="638"/>
+	<SubTexture name="Sing left miss0012" x="0" y="1279" width="461" height="638"/>
+	<SubTexture name="Sing left miss0013" x="461" y="1279" width="461" height="638"/>
+	<SubTexture name="Sing left miss0014" x="922" y="1279" width="461" height="638"/>
+	<SubTexture name="Sing left miss0015" x="1383" y="1279" width="461" height="638"/>
+	<SubTexture name="Sing left miss0016" x="1844" y="1279" width="461" height="638"/>
+	<SubTexture name="Sing left miss0017" x="2305" y="1279" width="461" height="638"/>
+	<SubTexture name="Sing left miss0018" x="2766" y="1279" width="461" height="638"/>
+	<SubTexture name="Sing left miss0019" x="3227" y="1279" width="461" height="638"/>
+	<SubTexture name="Sing left miss0020" x="0" y="1917" width="461" height="638"/>
+	<SubTexture name="Sing left miss0021" x="461" y="1917" width="461" height="638"/>
+	<SubTexture name="Sing left miss0022" x="922" y="1917" width="461" height="638"/>
+	<SubTexture name="Sing left miss0023" x="1383" y="1917" width="461" height="638"/>
+	<SubTexture name="Sing left miss0024" x="1844" y="1917" width="461" height="638"/>
+	<SubTexture name="Sing left miss0025" x="2305" y="1917" width="461" height="638"/>
+	<SubTexture name="Sing left miss0026" x="2766" y="1917" width="461" height="638"/>
+	<SubTexture name="Sing left miss0027" x="3227" y="1917" width="461" height="638"/>
+</TextureAtlas>

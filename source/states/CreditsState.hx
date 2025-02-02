@@ -38,6 +38,9 @@ class CreditsState extends MusicBeatState
 		#end
 
 		var defaultList:Array<Array<String>> = [ //Name - Icon name - Description - Link - BG Color
+			["Xythe Engine Team"],
+			["TheWolfLovers", "ace", "Does brainstorming, art and concept arts. (added winning icons compatibility too", "https://bsky.app/profile/thewolflovers.bsky.social", "fff700"],
+			["Frostydoge!", "Frosty", "bah [placeholder]", "https://www.youtube.com/@FrostyDoge1", "0055ff"],
 			['P-Slice Engine Team'],
 			['Mikolka9144',			'mikolka',			'Did everything for P-slice',								 'https://gamebanana.com/members/3329541',									'2ebcfa'],
 			['mcagabe19',			'lily',             'Porter of P-slice for mobile devices and creator of linc_luajit-rewritten (used for mobile builds)',                       'https://youtube.com/@mcagabe19',		'FFE7C0'],
