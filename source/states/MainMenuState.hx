@@ -48,6 +48,43 @@ class MainMenuState extends MusicBeatState
 		#if DISCORD_ALLOWED
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
+		if (FlxG.random.bool(50))
+		{
+			openfl.Lib.application.window.title = "KYS";
+		}
+		if (FlxG.random.bool(25))
+		{
+			openfl.Lib.application.window.title = "Shader? Is that you?";
+		}
+		if (FlxG.random.bool(60))
+		{
+			openfl.Lib.application.window.title = "If You See This... Fuck You!";
+		}
+		if (FlxG.random.bool(10))
+		{
+			openfl.Lib.application.window.title = "Holy Hell, A rare Find!!!!";
+		}
+		if (FlxG.random.bool(40))
+			{
+				openfl.Lib.application.window.title = "FnF VS Fire In The Hole";
+			}
+		if (FlxG.random.bool(50))
+		{
+			openfl.Lib.application.window.title = "FnF VS Bitch day";
+		}
+		if (FlxG.random.bool(30))
+			{
+				openfl.Lib.application.window.title = "Friday Night Funkin' VS Pokémon Mystery Dungeon: Loss of Light real?";
+			}
+		if (FlxG.random.bool(80))
+		{
+			openfl.Lib.application.window.title = "Friday Night Funkin': Xythe Engine";
+		}
+		if (FlxG.random.bool(80))
+			{
+				openfl.Lib.application.window.title = "Go to Credits for sea shanties!";
+			}
+			
 		#end
 
 
